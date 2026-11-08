@@ -1,0 +1,530 @@
+/* =========================================
+   GESTOR DE TAREAS - ESTILOS GENERALES
+========================================= */
+
+:root {
+    --primario: #4f46e5;
+    --primario-oscuro: #3730a3;
+    --fondo: #f3f5fa;
+    --blanco: #ffffff;
+    --texto: #1e293b;
+    --secundario: #64748b;
+    --borde: #e2e8f0;
+    --exito: #16a34a;
+    --error: #dc2626;
+    --sombra: 0 8px 25px rgba(15, 23, 42, 0.06);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: var(--fondo);
+    color: var(--texto);
+    line-height: 1.5;
+}
+
+button,
+input,
+textarea {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* =========================================
+   ENCABEZADO
+========================================= */
+
+.encabezado {
+    background: var(--blanco);
+    padding: 24px 6%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    border-bottom: 1px solid var(--borde);
+}
+
+.marca h1 {
+    margin: 0;
+    font-size: 26px;
+    color: var(--primario);
+}
+
+.marca p {
+    margin: 5px 0 0;
+    color: var(--secundario);
+    font-size: 14px;
+}
+
+.perfil {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.datos-usuario {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    text-align: right;
+}
+
+.etiqueta-rol {
+    display: inline-block;
+    background: #eef2ff;
+    color: var(--primario-oscuro);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.btn-salir {
+    background: #fee2e2;
+    color: #b91c1c;
+    border: none;
+    padding: 11px 16px;
+    border-radius: 9px;
+    font-weight: bold;
+}
+
+.btn-salir:hover {
+    background: #fecaca;
+}
+
+/* =========================================
+   CONTENEDOR Y ESTADÍSTICAS
+========================================= */
+
+.contenedor {
+    max-width: 1200px;
+    margin: 35px auto;
+    padding: 0 20px;
+}
+
+.resumen {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.tarjeta-estadistica {
+    background: var(--blanco);
+    padding: 25px;
+    border-radius: 14px;
+    box-shadow: var(--sombra);
+    border: 1px solid var(--borde);
+}
+
+.tarjeta-estadistica h2 {
+    margin: 0;
+    font-size: 15px;
+    color: var(--secundario);
+    font-weight: normal;
+}
+
+.tarjeta-estadistica p {
+    margin: 12px 0 0;
+    font-size: 36px;
+    font-weight: bold;
+    color: var(--primario);
+}
+
+/* =========================================
+   PANELES Y FORMULARIO
+========================================= */
+
+.panel {
+    background: var(--blanco);
+    padding: 28px;
+    margin-bottom: 25px;
+    border-radius: 14px;
+    border: 1px solid var(--borde);
+    box-shadow: var(--sombra);
+}
+
+.panel h2 {
+    margin: 0 0 8px;
+    font-size: 21px;
+}
+
+.panel > p {
+    color: var(--secundario);
+    margin-bottom: 24px;
+}
+
+.campo {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.campo label {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.campo input,
+.campo textarea {
+    width: 100%;
+    padding: 13px 15px;
+    border: 1px solid #cbd5e1;
+    border-radius: 9px;
+    background: var(--blanco);
+    color: var(--texto);
+    outline: none;
+}
+
+.campo input:focus,
+.campo textarea:focus {
+    border-color: var(--primario);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+}
+
+.campo textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.btn-principal {
+    background: var(--primario);
+    color: white;
+    border: none;
+    padding: 12px 22px;
+    border-radius: 9px;
+    font-weight: bold;
+}
+
+.btn-principal:hover {
+    background: var(--primario-oscuro);
+}
+
+.btn-secundario {
+    background: #eef2ff;
+    color: var(--primario);
+    border: none;
+    padding: 10px 16px;
+    border-radius: 9px;
+    font-weight: bold;
+}
+
+.btn-secundario:hover {
+    background: #e0e7ff;
+}
+
+/* =========================================
+   LISTADO DE TAREAS
+========================================= */
+
+.titulo-seccion {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.lista-tareas {
+    display: grid;
+    gap: 15px;
+}
+
+.tarea {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+    border: 1px solid var(--borde);
+    border-radius: 12px;
+    background: #fafbff;
+}
+
+.tarea-contenido {
+    flex: 1;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.tarea-contenido h3 {
+    margin: 0 0 8px;
+    font-size: 17px;
+}
+
+.tarea-contenido p {
+    margin: 0 0 10px;
+    color: var(--secundario);
+    white-space: pre-wrap;
+}
+
+.tarea-autor {
+    display: block;
+    margin-top: 8px;
+    font-size: 13px;
+    color: var(--secundario);
+}
+
+.tarea-acciones {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.estado {
+    display: inline-block;
+    padding: 5px 11px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.estado-pendiente {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.estado-completada {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.btn-estado,
+.btn-eliminar {
+    border: none;
+    padding: 10px 13px;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+.btn-estado {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.btn-estado:hover {
+    background: #bfdbfe;
+}
+
+.btn-eliminar {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.btn-eliminar:hover {
+    background: #fecaca;
+}
+
+/* =========================================
+   MENSAJES Y ESTADO VACÍO
+========================================= */
+
+.mensaje {
+    padding: 15px 18px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+.mensaje[hidden] {
+    display: none;
+}
+
+.mensaje-exito {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.mensaje-error {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.estado-vacio {
+    text-align: center;
+    padding: 35px 15px;
+    color: var(--secundario);
+}
+
+/* =========================================
+   DISEÑO RESPONSIVE
+========================================= */
+
+@media (max-width: 768px) {
+    .encabezado {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 20px;
+    }
+
+    .perfil {
+        justify-content: space-between;
+    }
+
+    .datos-usuario {
+        text-align: left;
+    }
+
+    .resumen {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .contenedor {
+        margin: 20px auto;
+        padding: 0 12px;
+    }
+
+    .panel {
+        padding: 20px;
+    }
+
+    .tarea {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .tarea-acciones {
+        width: 100%;
+    }
+
+    .tarea-acciones button {
+        flex: 1;
+    }
+}
+
+@media (max-width: 420px) {
+    .perfil {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+/* =========================================
+   INICIO DE SESIÓN Y REGISTRO
+========================================= */
+
+.pagina-auth {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #eef2ff, #f8fafc);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 25px 15px;
+}
+
+.contenedor-auth {
+    width: 100%;
+    max-width: 440px;
+}
+
+.tarjeta-auth {
+    background: #ffffff;
+    padding: 38px;
+    border-radius: 18px;
+    border: 1px solid var(--borde);
+    box-shadow: 0 15px 45px rgba(15, 23, 42, 0.09);
+}
+
+.auth-encabezado {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.auth-icono {
+    width: 58px;
+    height: 58px;
+    background: var(--primario);
+    color: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 16px;
+    font-size: 30px;
+    font-weight: bold;
+    margin: 0 auto 18px;
+}
+
+.auth-encabezado h1 {
+    font-size: 26px;
+    color: var(--primario);
+    margin: 0 0 8px;
+}
+
+.auth-encabezado p,
+.auth-titulo p {
+    color: var(--secundario);
+    font-size: 14px;
+    margin: 0;
+}
+
+.auth-titulo {
+    margin-bottom: 25px;
+}
+
+.auth-titulo h2 {
+    font-size: 22px;
+    margin: 0 0 8px;
+}
+
+.btn-auth {
+    width: 100%;
+    margin-top: 8px;
+    padding: 14px;
+}
+
+.auth-enlace {
+    margin: 25px 0 0;
+    text-align: center;
+    color: var(--secundario);
+    font-size: 14px;
+}
+
+.auth-enlace a {
+    color: var(--primario);
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.auth-enlace a:hover {
+    text-decoration: underline;
+}
+
+.auth-pie {
+    text-align: center;
+    color: var(--secundario);
+    font-size: 12px;
+    margin-top: 20px;
+}
+
+@media (max-width: 480px) {
+    .tarjeta-auth {
+        padding: 25px 20px;
+    }
+
+    .auth-encabezado h1 {
+        font-size: 23px;
+    }
+}
+
+/* Ayuda visual para los campos de registro */
+
+.ayuda-campo {
+    display: block;
+    color: var(--secundario);
+    font-size: 12px;
+    line-height: 1.5;
+}
