@@ -121,14 +121,57 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="campo">
                     <label for="contrasena">Contraseña</label>
 
-                    <input
-                        type="password"
-                        id="contrasena"
-                        name="contrasena"
-                        placeholder="Ingresa tu contraseña"
-                        autocomplete="current-password"
-                        required
-                    >
+                    <div class="campo-contrasena">
+
+                        <input
+                            type="password"
+                            name="contrasena"
+                            id="contrasena"
+                            placeholder="Ingresa tu contraseña"
+                            required
+                        >
+
+
+                        <button
+                            type="button"
+                            class="boton-ver-contrasena"
+                            aria-label="Mostrar contraseña"
+                            aria-pressed="false">
+                            
+                            <!-- Ojo abierto -->
+                            <svg class="icono-mostrar"
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="22" height="22"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                aria-hidden="true">
+                                <path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                            
+                            <!-- Ojo tachado -->
+                            <svg class="icono-ocultar"
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="22" height="22"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                aria-hidden="true"
+                                hidden>
+                                <path d="m3 3 18 18"/>
+                                <path d="M10.6 10.6a2 2 0 0 0 2.8 2.8"/>
+                                <path d="M9.88 5.09A10.75 10.75 0 0 1 12 4.88c4.67 0 8.54 2.85 9.94 7.12a11.7 11.7 0 0 1-4.01 5.3"/>
+                                <path d="M6.61 6.61A11.7 11.7 0 0 0 2.06 12c1.4 4.27 5.27 7.12 9.94 7.12 1.23 0 2.42-.2 3.5-.58"/>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
 
                 <button type="submit" class="btn-principal btn-auth">
@@ -150,5 +193,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     </main>
 
+    <script>
+        const botonVer = document.querySelector(".boton-ver-contrasena");
+        const campo = document.querySelector("#contrasena");
+        const iconoMostrar = botonVer.querySelector(".icono-mostrar");
+        const iconoOcultar = botonVer.querySelector(".icono-ocultar");
+        botonVer.addEventListener("click", () => {
+            
+            const estaVisible = campo.type === "text";
+            campo.type = estaVisible ? "password" : "text";
+            iconoMostrar.style.display = estaVisible ? "block" : "none";
+            iconoOcultar.style.display = estaVisible ? "none" : "block";
+            botonVer.setAttribute(
+                "aria-label",
+                estaVisible ? "Mostrar contraseña" : "Ocultar contraseña"
+            );
+            botonVer.setAttribute("aria-pressed", String(!estaVisible));
+        });
+    </script>
+    
 </body>
 </html>

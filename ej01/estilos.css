@@ -1,7 +1,3 @@
-/* =========================================
-   GESTOR DE TAREAS - ESTILOS GENERALES
-========================================= */
-
 :root {
     --primario: #4f46e5;
     --primario-oscuro: #3730a3;
@@ -44,7 +40,7 @@ button:disabled {
 }
 
 /* =========================================
-   ENCABEZADO
+    ENCABEZADO
 ========================================= */
 
 .encabezado {
@@ -55,6 +51,7 @@ button:disabled {
     justify-content: space-between;
     gap: 20px;
     border-bottom: 1px solid var(--borde);
+    flex-wrap: wrap;
 }
 
 .marca h1 {
@@ -73,12 +70,14 @@ button:disabled {
     display: flex;
     align-items: center;
     gap: 20px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
 }
 
 .datos-usuario {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 6px;
     text-align: right;
 }
 
@@ -106,7 +105,7 @@ button:disabled {
 }
 
 /* =========================================
-   CONTENEDOR Y ESTADÍSTICAS
+    CONTENEDOR Y ESTADÍSTICAS
 ========================================= */
 
 .contenedor {
@@ -145,14 +144,14 @@ button:disabled {
 }
 
 /* =========================================
-   PANELES Y FORMULARIO
+    PANELES Y FORMULARIO
 ========================================= */
 
 .panel {
     background: var(--blanco);
     padding: 28px;
     margin-bottom: 25px;
-    border-radius: 14px;
+    border-radius: 16px;
     border: 1px solid var(--borde);
     box-shadow: var(--sombra);
 }
@@ -227,8 +226,55 @@ button:disabled {
     background: #e0e7ff;
 }
 
+.campo-contrasena {
+    position: relative;
+}
+
+.campo-contrasena input {
+    padding-right: 75px;
+}
+
+.boton-ver-contrasena {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+
+    border: none;
+    background: transparent;
+    color: #4F46E5;
+
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.boton-ver-contrasena:hover {
+    color: #1D4ED8;
+}
+
+.boton-ver-contrasena:focus-visible {
+    outline: 2px solid #4F46E5;
+    outline-offset: 3px;
+}
+
+.boton-ver-contrasena {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+}
+
+.boton-ver-contrasena svg[hidden] {
+    display: none;
+}
+
+.boton-ver-contrasena .icono-ocultar {
+    display: none;
+}
+
 /* =========================================
-   LISTADO DE TAREAS
+    LISTADO DE TAREAS
 ========================================= */
 
 .titulo-seccion {
@@ -330,7 +376,7 @@ button:disabled {
 }
 
 /* =========================================
-   MENSAJES Y ESTADO VACÍO
+    MENSAJES Y ESTADO VACÍO
 ========================================= */
 
 .mensaje {
@@ -361,10 +407,29 @@ button:disabled {
 }
 
 /* =========================================
-   DISEÑO RESPONSIVE
+    DISEÑO RESPONSIVE
 ========================================= */
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
+    .resumen {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .tarjeta-estadistica:last-child {
+        grid-column: 1 / -1;
+    }
+
+    .contenedor {
+        margin: 25px auto;
+        padding: 0 16px;
+    }
+
+    .panel {
+        padding: 24px;
+    }
+}
+
+@media (max-width: 600px) {
     .encabezado {
         flex-direction: column;
         align-items: stretch;
@@ -373,6 +438,7 @@ button:disabled {
 
     .perfil {
         justify-content: space-between;
+        align-items: center;
     }
 
     .datos-usuario {
@@ -393,6 +459,15 @@ button:disabled {
         padding: 20px;
     }
 
+    .titulo-seccion {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .titulo-seccion button {
+        width: 100%;
+    }
+
     .tarea {
         flex-direction: column;
         align-items: stretch;
@@ -405,6 +480,12 @@ button:disabled {
     .tarea-acciones button {
         flex: 1;
     }
+
+    .btn-principal,
+    .btn-secundario,
+    .btn-salir {
+        width: 100%;
+    }
 }
 
 @media (max-width: 420px) {
@@ -413,8 +494,44 @@ button:disabled {
         align-items: stretch;
     }
 
+    .marca h1 {
+        font-size: 22px;
+    }
+
+    .tarjeta-estadistica p {
+        font-size: 30px;
+    }
+
+    .panel h2 {
+        font-size: 19px;
+    }
+}
+
+/* Total de tareas */
+.tarjeta-estadistica:nth-child(1) {
+    border-top: 4px solid var(--primario);
+}
+
+/* Tareas pendientes */
+.tarjeta-estadistica:nth-child(2) {
+    border-top: 4px solid #F59E0B;
+}
+
+.tarjeta-estadistica:nth-child(2) p {
+    color: #D97706;
+}
+
+/* Tareas completadas */
+.tarjeta-estadistica:nth-child(3) {
+    border-top: 4px solid #22C55E;
+}
+
+.tarjeta-estadistica:nth-child(3) p {
+    color: #16A34A;
+}
+
 /* =========================================
-   INICIO DE SESIÓN Y REGISTRO
+    INICIO DE SESIÓN Y REGISTRO
 ========================================= */
 
 .pagina-auth {
@@ -527,4 +644,87 @@ button:disabled {
     color: var(--secundario);
     font-size: 12px;
     line-height: 1.5;
+}
+
+
+/* =========================================
+   USUARIOS DESPLEGABLES - ADMINISTRADOR
+========================================= */
+
+.usuario-desplegable {
+    background: #ffffff;
+    border: 1px solid var(--borde);
+    border-radius: 14px;
+    margin-bottom: 12px;
+    overflow: hidden;
+}
+
+.usuario-cabecera {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 18px 20px;
+    cursor: pointer;
+    list-style: none;
+}
+
+.usuario-cabecera::-webkit-details-marker {
+    display: none;
+}
+
+.usuario-cabecera:hover {
+    background: #f8faff;
+}
+
+.usuario-cabecera:focus-visible {
+    outline: 2px solid var(--primario);
+    outline-offset: -3px;
+}
+
+.usuario-datos {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0;
+}
+
+.usuario-datos strong {
+    overflow-wrap: anywhere;
+}
+
+.usuario-datos small {
+    color: var(--secundario);
+    font-size: 13px;
+}
+
+.usuario-flecha {
+    color: var(--primario);
+    font-size: 26px;
+    line-height: 1;
+    transition: transform 0.2s ease;
+}
+
+.usuario-desplegable[open] .usuario-flecha {
+    transform: rotate(180deg);
+}
+
+.usuario-tareas {
+    background: #f8fafc;
+    padding: 14px;
+    border-top: 1px solid var(--borde);
+}
+
+.usuario-tareas .tarea:last-child {
+    margin-bottom: 0;
+}
+
+@media (max-width: 600px) {
+    .usuario-cabecera {
+        padding: 15px;
+    }
+
+    .usuario-tareas {
+        padding: 10px;
+    }
 }

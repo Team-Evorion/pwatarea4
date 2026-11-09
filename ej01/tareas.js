@@ -107,10 +107,83 @@ function crearBoton(texto, clase, accion) {
 // 6. MOSTRAR LAS TAREAS EN PANTALLA
 // ==========================================
 
-function mostrarTareas(tareas) {
+const usuariosAbiertos = new Set();
+
+function mostrarTareas(tareas, usuarios = []) {
     listaTareas.replaceChildren();
 
-    if (tareas.length === 0) {
+    const contenedores = new Map();
+
+    if (ES_ADMIN) {
+        if (usuarios.length === 0) {
+            const aviso = document.createElement("p");
+            aviso.className = "estado-vacio";
+            aviso.textContent = "No hay usuarios registrados.";
+            listaTareas.appendChild(aviso);
+        }
+
+        usuarios.forEach(usuario => {
+            const id = Number(usuario.id_usuario);
+
+            const tareasUsuario = tareas.filter(
+                tarea => Number(tarea.id_usuario) === id
+            );
+
+            const desplegable = document.createElement("details");
+            desplegable.className = "usuario-desplegable";
+            desplegable.open = usuariosAbiertos.has(id);
+
+            const cabecera = document.createElement("summary");
+            cabecera.className = "usuario-cabecera";
+
+            const datos = document.createElement("span");
+            datos.className = "usuario-datos";
+
+            const nombre = document.createElement("strong");
+            nombre.textContent = usuario.nombre;
+
+            const cantidad = document.createElement("small");
+            cantidad.textContent =
+                tareasUsuario.length === 1
+                    ? "1 tarea"
+                    : `${tareasUsuario.length} tareas`;
+
+            datos.append(nombre, cantidad);
+
+            const flecha = document.createElement("span");
+            flecha.className = "usuario-flecha";
+            flecha.textContent = "⌄";
+            flecha.setAttribute("aria-hidden", "true");
+
+            cabecera.append(datos, flecha);
+
+            const interior = document.createElement("div");
+            interior.className = "usuario-tareas";
+
+            if (tareasUsuario.length === 0) {
+                const aviso = document.createElement("p");
+                aviso.className = "estado-vacio";
+                aviso.textContent = "Este usuario todavía no tiene tareas.";
+                interior.appendChild(aviso);
+            }
+
+            desplegable.addEventListener("toggle", () => {
+                if (desplegable.open) {
+                    usuariosAbiertos.add(id);
+                } else {
+                    usuariosAbiertos.delete(id);
+                }
+            });
+
+            desplegable.append(cabecera, interior);
+            listaTareas.appendChild(desplegable);
+
+            contenedores.set(id, interior);
+        });
+    }
+
+    if (!ES_ADMIN && tareas.length === 0) {
+
         const vacio = document.createElement("p");
 
         vacio.className = "estado-vacio";
@@ -164,16 +237,15 @@ function mostrarTareas(tareas) {
             ? "Marcar pendiente"
             : "Completar";
 
-        const botonEstado = crearBoton(
-            textoBoton,
-            "btn-estado",
-            () => cambiarEstado(tarea.id_tarea, botonEstado)
-        );
+        if (tarea.es_propietario === true) {
+            const botonEstado = crearBoton(
+                textoBoton,
+                "btn-estado",
+                () => cambiarEstado(tarea.id_tarea, botonEstado)
+            );
 
-        acciones.appendChild(botonEstado);
+            acciones.appendChild(botonEstado);
 
-        // Solo mostramos eliminar al administrador.
-        if (ES_ADMIN) {
             const botonEliminar = crearBoton(
                 "Eliminar",
                 "btn-eliminar",
@@ -184,7 +256,18 @@ function mostrarTareas(tareas) {
         }
 
         tarjeta.append(contenido, acciones);
-        listaTareas.appendChild(tarjeta);
+        tarjeta.append(contenido, acciones);
+
+        if (ES_ADMIN) {
+            const id = Number(tarea.id_usuario);
+            const interior = contenedores.get(id);
+
+            if (interior) {
+                interior.appendChild(tarjeta);
+            }
+        } else {
+            listaTareas.appendChild(tarjeta);
+        }
     });
 }
 
@@ -204,7 +287,7 @@ async function cargarTareas() {
             throw new Error("La lista de tareas no es válida.");
         }
 
-        mostrarTareas(tareas);
+        mostrarTareas(tareas, resultado.usuarios || []);
         actualizarEstadisticas(tareas);
 
     } catch (error) {
@@ -288,11 +371,6 @@ async function cambiarEstado(idTarea, boton) {
 // ==========================================
 
 async function eliminarTarea(idTarea, boton) {
-    if (!ES_ADMIN) {
-        mostrarMensaje("No tienes permiso para eliminar.", "error");
-        return;
-    }
-
     const confirmar = window.confirm(
         "¿Estás seguro de que deseas eliminar esta tarea?"
     );

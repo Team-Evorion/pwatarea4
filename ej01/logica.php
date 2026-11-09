@@ -40,6 +40,30 @@ function obtenerTareas(PDO $conexion, int $idUsuario, bool $esAdmin): array
         $consulta->execute([$idUsuario]);
     }
 
+    $tareas = $consulta->fetchAll();
+
+    foreach ($tareas as &$tarea) {
+        $tarea['es_propietario'] =
+            (int) $tarea['id_usuario'] === $idUsuario;
+    }
+
+    unset($tarea);
+
+    return $tareas;
+}
+
+/**
+ * Obtiene los usuarios registrados para el administrador.
+ */
+function obtenerUsuarios(PDO $conexion): array
+{
+    $sql = "SELECT id_usuario, nombre
+            FROM usuarios
+            ORDER BY nombre ASC";
+
+    $consulta = $conexion->prepare($sql);
+    $consulta->execute();
+
     return $consulta->fetchAll();
 }
 
@@ -64,21 +88,18 @@ function agregarTarea(PDO $conexion, string $titulo, ?string $descripcion, int $
 /**
  * Cambia el estado de una tarea a 'pendiente' o 'completada'.
  */
-function cambiarEstadoTarea(PDO $conexion, int $idTarea, string $nuevoEstado, int $idUsuario, bool $esAdmin): bool
+function cambiarEstadoTarea(PDO $conexion, int $idTarea, string $nuevoEstado, int $idUsuario): bool
 {
     if (!in_array($nuevoEstado, ['pendiente', 'completada'], true)) {
         return false;
     }
 
-    if ($esAdmin) {
-        $sql = "UPDATE tareas SET estado = ? WHERE id_tarea = ?";
-        $consulta = $conexion->prepare($sql);
-        $consulta->execute([$nuevoEstado, $idTarea]);
-    } else {
-        $sql = "UPDATE tareas SET estado = ? WHERE id_tarea = ? AND id_usuario = ?";
-        $consulta = $conexion->prepare($sql);
-        $consulta->execute([$nuevoEstado, $idTarea, $idUsuario]);
-    }
+    $sql = "UPDATE tareas
+            SET estado = ?
+            WHERE id_tarea = ? AND id_usuario = ?";
+
+    $consulta = $conexion->prepare($sql);
+    $consulta->execute([$nuevoEstado, $idTarea, $idUsuario]);
 
     return $consulta->rowCount() > 0;
 }
@@ -86,14 +107,14 @@ function cambiarEstadoTarea(PDO $conexion, int $idTarea, string $nuevoEstado, in
 /**
  * Alterna automáticamente el estado de una tarea ('pendiente' <-> 'completada').
  */
-function alternarEstadoTarea(PDO $conexion, int $idTarea, int $idUsuario, bool $esAdmin): ?string
+function alternarEstadoTarea(PDO $conexion, int $idTarea, int $idUsuario): ?string
 {
-    $sql = $esAdmin
-        ? "SELECT estado FROM tareas WHERE id_tarea = ?"
-        : "SELECT estado FROM tareas WHERE id_tarea = ? AND id_usuario = ?";
+    $sql = "SELECT estado
+            FROM tareas
+            WHERE id_tarea = ? AND id_usuario = ?";
 
     $consulta = $conexion->prepare($sql);
-    $consulta->execute($esAdmin ? [$idTarea] : [$idTarea, $idUsuario]);
+    $consulta->execute([$idTarea, $idUsuario]);
     $tarea = $consulta->fetch();
 
     if ($tarea === false) {
@@ -102,26 +123,27 @@ function alternarEstadoTarea(PDO $conexion, int $idTarea, int $idUsuario, bool $
 
     $nuevoEstado = ($tarea['estado'] === 'completada') ? 'pendiente' : 'completada';
 
-    $sqlUpdate = "UPDATE tareas SET estado = ? WHERE id_tarea = ?";
+    $sqlUpdate = "UPDATE tareas
+                    SET estado = ?
+                    WHERE id_tarea = ? AND id_usuario = ?";
+
     $update = $conexion->prepare($sqlUpdate);
-    $update->execute([$nuevoEstado, $idTarea]);
+    $update->execute([$nuevoEstado, $idTarea, $idUsuario]);
 
     return $nuevoEstado;
 }
 
 /**
  * Elimina una tarea de la base de datos.
- * - Solo el Administrador (rol 1) tiene permiso para eliminar tareas.
+ * - Cada usuario puede eliminar únicamente sus propias tareas.
  */
-function eliminarTarea(PDO $conexion, int $idTarea, bool $esAdmin): bool
+function eliminarTarea(PDO $conexion, int $idTarea, int $idUsuario): bool
 {
-    if (!$esAdmin) {
-        return false;
-    }
+    $sql = "DELETE FROM tareas
+            WHERE id_tarea = ? AND id_usuario = ?";
 
-    $sql = "DELETE FROM tareas WHERE id_tarea = ?";
     $consulta = $conexion->prepare($sql);
-    $consulta->execute([$idTarea]);
+    $consulta->execute([$idTarea, $idUsuario]);
 
     return $consulta->rowCount() > 0;
 }
@@ -159,7 +181,8 @@ if (basename($_SERVER['SCRIPT_FILENAME']) === 'logica.php') {
                     'id_usuario' => $idUsuario,
                     'id_rol' => obtenerRol(),
                     'es_admin' => $esAdmin,
-                    'tareas' => $tareas
+                    'tareas' => $tareas,
+                    'usuarios' => $esAdmin ? obtenerUsuarios($conexion) : []
                 ]);
                 break;
 
@@ -216,10 +239,10 @@ if (basename($_SERVER['SCRIPT_FILENAME']) === 'logica.php') {
                 }
 
                 if (isset($datos['estado']) && in_array($datos['estado'], ['pendiente', 'completada'], true)) {
-                    $exito = cambiarEstadoTarea($conexion, $idTarea, $datos['estado'], $idUsuario, $esAdmin);
+                    $exito = cambiarEstadoTarea($conexion, $idTarea, $datos['estado'], $idUsuario);
                     $estadoFinal = $datos['estado'];
                 } else {
-                    $estadoFinal = alternarEstadoTarea($conexion, $idTarea, $idUsuario, $esAdmin);
+                    $estadoFinal = alternarEstadoTarea($conexion, $idTarea, $idUsuario);
                     $exito = ($estadoFinal !== null);
                 }
 
@@ -245,15 +268,6 @@ if (basename($_SERVER['SCRIPT_FILENAME']) === 'logica.php') {
                     break;
                 }
 
-                if (!$esAdmin) {
-                    http_response_code(403);
-                    echo json_encode([
-                        'ok' => false,
-                        'error' => 'Permiso denegado: solo el Administrador puede eliminar tareas.'
-                    ]);
-                    break;
-                }
-
                 $idTarea = (int) ($datos['id_tarea'] ?? 0);
 
                 if ($idTarea <= 0) {
@@ -262,7 +276,7 @@ if (basename($_SERVER['SCRIPT_FILENAME']) === 'logica.php') {
                     break;
                 }
 
-                if (eliminarTarea($conexion, $idTarea, $esAdmin)) {
+                if (eliminarTarea($conexion, $idTarea, $idUsuario)) {
                     echo json_encode([
                         'ok' => true,
                         'mensaje' => 'Tarea eliminada correctamente.'
@@ -271,7 +285,7 @@ if (basename($_SERVER['SCRIPT_FILENAME']) === 'logica.php') {
                     http_response_code(404);
                     echo json_encode([
                         'ok' => false,
-                        'error' => 'No se encontró la tarea o ya fue eliminada.'
+                        'error' => 'La tarea no existe o no tienes permiso para eliminarla.'
                     ]);
                 }
                 break;

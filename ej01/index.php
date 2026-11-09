@@ -1,4 +1,4 @@
-<<?php
+<?php
 require_once __DIR__ . '/auth.php';
 
 // Impide acceder sin iniciar sesión.
@@ -119,7 +119,7 @@ $rol = $esAdmin ? 'Administrador' : 'Usuario';
         <section class="panel">
             <div class="titulo-seccion">
                 <h2>
-                    <?= $esAdmin ? 'Todas las tareas' : 'Mis tareas' ?>
+                    <?= $esAdmin ? 'Usuarios' : 'Mis tareas' ?>
                 </h2>
 
                 <button
